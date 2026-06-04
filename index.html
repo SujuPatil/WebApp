@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+    }
+
+    /* ── Left illustration panel ── */
+    .panel-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(160deg, #0f3460 0%, #16213e 55%, #1a1a2e 100%);
+      padding: 60px 48px;
+      gap: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Decorative blobs */
+    .panel-left::before,
+    .panel-left::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.08;
+    }
+    .panel-left::before {
+      width: 420px; height: 420px;
+      background: #e94560;
+      top: -120px; left: -120px;
+    }
+    .panel-left::after {
+      width: 300px; height: 300px;
+      background: #53c0f0;
+      bottom: -80px; right: -80px;
+    }
+
+    .panel-left .tagline {
+      color: #fff;
+      text-align: center;
+      z-index: 1;
+    }
+    .panel-left .tagline h2 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .panel-left .tagline p {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.6;
+      max-width: 320px;
+    }
+
+    .panel-left svg {
+      z-index: 1;
+      max-width: 320px;
+      width: 100%;
+    }
+
+    /* ── Right form panel ── */
+    .panel-right {
+      width: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      padding: 60px 48px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .card h1 {
+      text-align: center;
+      margin-bottom: 8px;
+      font-size: 1.8rem;
+      color: #0f3460;
+    }
+
+    .card p.subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+
+    /* ── Responsive: stack on small screens ── */
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .panel-left { padding: 40px 24px; min-height: 260px; }
+      .panel-left svg { max-width: 200px; }
+      .panel-right { width: 100%; padding: 40px 24px; }
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      color: #111;
+    }
+
+    .form-group input:focus {
+      border-color: #0f3460;
+      box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.15);
+    }
+
+    .options {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      font-size: 0.85rem;
+    }
+
+    .options label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #555;
+      cursor: pointer;
+    }
+
+    .options a {
+      color: #0f3460;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .options a:hover { text-decoration: underline; }
+
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      background: #0f3460;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-login:hover  { background: #16213e; }
+    .btn-login:active { transform: scale(0.98); }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 24px 0;
+      color: #aaa;
+      font-size: 0.8rem;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e5e7eb;
+    }
+
+    .signup-link {
+      text-align: center;
+      font-size: 0.88rem;
+      color: #555;
+    }
+
+    .signup-link a {
+      color: #0f3460;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .signup-link a:hover { text-decoration: underline; }
+
+    .error-msg {
+      color: #dc2626;
+      font-size: 0.82rem;
+      margin-top: 4px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left illustration panel -->
+  <div class="panel-left">
+    <!-- Inline SVG: secure login illustration -->
+    <svg viewBox="0 0 400 320" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Ground shadow -->
+      <ellipse cx="200" cy="300" rx="120" ry="14" fill="rgba(255,255,255,0.06)"/>
+
+      <!-- Shield body -->
+      <path d="M200 40 L290 80 L290 160 C290 215 200 260 200 260 C200 260 110 215 110 160 L110 80 Z"
+            fill="url(#shieldGrad)" opacity="0.95"/>
+      <!-- Shield gloss -->
+      <path d="M200 55 L275 90 L275 160 C275 208 200 248 200 248"
+            stroke="rgba(255,255,255,0.18)" stroke-width="2" fill="none"/>
+
+      <!-- Lock body on shield -->
+      <rect x="176" y="148" width="48" height="38" rx="7" fill="white" opacity="0.92"/>
+      <!-- Lock shackle -->
+      <path d="M186 148 L186 136 C186 122 214 122 214 136 L214 148"
+            stroke="white" stroke-width="7" stroke-linecap="round" fill="none" opacity="0.92"/>
+      <!-- Lock keyhole -->
+      <circle cx="200" cy="163" r="6" fill="#0f3460"/>
+      <rect x="197" y="163" width="6" height="9" rx="2" fill="#0f3460"/>
+
+      <!-- Star sparkles -->
+      <circle cx="95"  cy="72"  r="3.5" fill="#53c0f0" opacity="0.8"/>
+      <circle cx="308" cy="90"  r="2.5" fill="#e94560" opacity="0.8"/>
+      <circle cx="320" cy="195" r="3"   fill="#53c0f0" opacity="0.6"/>
+      <circle cx="82"  cy="200" r="2"   fill="#fff"    opacity="0.5"/>
+      <circle cx="155" cy="48"  r="2"   fill="#fff"    opacity="0.4"/>
+
+      <!-- Dashed orbit ring -->
+      <ellipse cx="200" cy="150" rx="130" ry="130"
+               stroke="rgba(255,255,255,0.07)" stroke-width="1.5" stroke-dasharray="6 8" fill="none"/>
+
+      <!-- Floating dots -->
+      <circle cx="70"  cy="150" r="5" fill="#53c0f0" opacity="0.5"/>
+      <circle cx="330" cy="150" r="5" fill="#e94560" opacity="0.5"/>
+      <circle cx="200" cy="20"  r="4" fill="#fff"    opacity="0.3"/>
+      <circle cx="200" cy="285" r="4" fill="#fff"    opacity="0.3"/>
+
+      <defs>
+        <linearGradient id="shieldGrad" x1="110" y1="40" x2="290" y2="260" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stop-color="#e94560"/>
+          <stop offset="100%" stop-color="#53c0f0"/>
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <div class="tagline">
+      <h2>Secure &amp; Simple</h2>
+      <p>Your data is protected with industry-standard encryption. Sign in to continue.</p>
+    </div>
+  </div>
+
+  <!-- Right form panel -->
+  <div class="panel-right">
+    <div class="card">
+      <h1>Welcome back</h1>
+      <p class="subtitle">Sign in to your account</p>
+
+      <form id="loginForm" novalidate>
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+          <span class="error-msg" id="emailError">Please enter a valid email address.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required />
+          <span class="error-msg" id="passwordError">Password must be at least 8 characters.</span>
+        </div>
+
+        <div class="options">
+          <label>
+            <input type="checkbox" name="remember" /> Remember me
+          </label>
+          <a href="#">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-login">Sign In</button>
+      </form>
+
+      <div class="divider">or</div>
+
+      <p class="signup-link">Don't have an account? <a href="#">Create one</a></p>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+
+    function validateEmail(value) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      let valid = true;
+
+      if (!validateEmail(emailInput.value.trim())) {
+        emailError.style.display = 'block';
+        emailInput.style.borderColor = '#dc2626';
+        valid = false;
+      } else {
+        emailError.style.display = 'none';
+        emailInput.style.borderColor = '';
+      }
+
+      if (passwordInput.value.length < 8) {
+        passwordError.style.display = 'block';
+        passwordInput.style.borderColor = '#dc2626';
+        valid = false;
+      } else {
+        passwordError.style.display = 'none';
+        passwordInput.style.borderColor = '';
+      }
+
+      if (valid) {
+        // TODO: replace with your real authentication logic
+        alert('Login successful!');
+      }
+    });
+  </script>
+
+</body>
+</html>
